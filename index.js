@@ -36,6 +36,9 @@ app.get('/api/timestamp/:date_string?', function (request, response) {
     const date_string_raw = request.params.date_string;
     const date_string_attempted_parse = new Date(date_string_raw);
     console.log(date_string_attempted_parse);
+    const DateError = function(error_message) {
+        this.error_message = error_message
+    };
 
     // either send the object or raise an exception
     try {
@@ -45,17 +48,14 @@ app.get('/api/timestamp/:date_string?', function (request, response) {
                 utc : date_string_attempted_parse.toUTCString()
             });
         }
-        else if (!!date_string_attempted_parse.getTime() == false) {
-            response.send({
-                error : "Invalid Date"
-            })
-            // throw new DateError('Invalid Date')
+        else if (!!date_string_attempted_parse.getTime() === false) {
+            throw new DateError('Invalid Date');
         }
     }
 
     catch(e) {
-        console.log('Error:', e);
-        response.send('Error:', e)
+        console.log(e);
+        response.send(e.error_message)
     }
 
 });
